@@ -22,6 +22,10 @@ type ArticleRepository interface {
 	Delete(ctx context.Context, id int64) error
 }
 
+type BMIRepository interface {
+	StoreBMILog(ctx context.Context, a *domain.BMI) error
+}
+
 // AuthorRepository represent the author's repository contract
 //
 //go:generate mockery --name AuthorRepository
@@ -31,14 +35,16 @@ type AuthorRepository interface {
 
 type Service struct {
 	articleRepo ArticleRepository
+	bmiRepo     BMIRepository
 	authorRepo  AuthorRepository
 }
 
 // NewService will create a new article service object
-func NewService(a ArticleRepository, ar AuthorRepository) *Service {
+func NewService(a ArticleRepository, ar AuthorRepository, b BMIRepository) *Service {
 	return &Service{
 		articleRepo: a,
 		authorRepo:  ar,
+		bmiRepo:     b,
 	}
 }
 
@@ -164,4 +170,12 @@ func (a *Service) Delete(ctx context.Context, id int64) (err error) {
 		return domain.ErrNotFound
 	}
 	return a.articleRepo.Delete(ctx, id)
+}
+
+func (a *Service) StoreBMILog(ctx context.Context, m *domain.BMI) (err error) {
+	err = a.bmiRepo.StoreBMILog(ctx, m)
+	if err != nil {
+		return err
+	}
+	return
 }

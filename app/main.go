@@ -75,10 +75,12 @@ func main() {
 	// Prepare Repository
 	authorRepo := mysqlRepo.NewAuthorRepository(dbConn)
 	articleRepo := mysqlRepo.NewArticleRepository(dbConn)
+	bmiRepo := mysqlRepo.NewBMIRepository(dbConn)
 
 	// Build service Layer
-	svc := article.NewService(articleRepo, authorRepo)
+	svc := article.NewService(articleRepo, authorRepo, bmiRepo)
 	rest.NewArticleHandler(e, svc)
+	rest.NewBMIHandler(e, svc)
 
 	// Start Server
 	address := os.Getenv("SERVER_ADDRESS")
